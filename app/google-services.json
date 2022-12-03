@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "311802911119",
+    "project_id": "myhomebook-10e62",
+    "storage_bucket": "myhomebook-10e62.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311802911119:android:fb540dc21698db20cc93fa",
+        "android_client_info": {
+          "package_name": "com.example.myhomebook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "311802911119-kht5dak69b4rj6l93vcmd5l02sg2rjou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhqnaOn0MF0fA9HGNDm3SL6MKP0_GlkfE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "311802911119-kht5dak69b4rj6l93vcmd5l02sg2rjou.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
