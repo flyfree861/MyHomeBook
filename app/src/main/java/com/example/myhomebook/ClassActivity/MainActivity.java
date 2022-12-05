@@ -25,6 +25,11 @@ import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.identity.SignInCredential;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,14 +51,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextInputEditText txtMail, txtPassword;
 
     //Google oAuth Object declaration
-    BeginSignInRequest signInRequest;
-    private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
-    private boolean showOneTapUI = true;
-    SignInClient oneTapClient;
-
-
-    //Firebase
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    SignInButton btSignIn;
+    GoogleSignInClient googleSignInClient;
+    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -72,15 +72,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnLoginMail.setOnClickListener(this);
 
         //Google one tap and signin
-        signInRequest = BeginSignInRequest.builder()
-                .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                        .setSupported(true)
-                        // Your server's client ID, not your Android client ID.
-                        .setServerClientId(getString(R.string.default_web_client_id))
-                        // Only show accounts previously used to sign in.
-                        .setFilterByAuthorizedAccounts(true)
-                        .build())
-                .build();
+        GoogleSignInOptions googleSignInOptions=new GoogleSignInOptions.Builder(
+                GoogleSignInOptions.DEFAULT_SIGN_IN
+        ).requestIdToken("311802911119-8a7p62n75cclkhn36a16gn1pbqfenlgv.apps.googleusercontent.com")
+         .requestEmail()
+         .build();
+
+        // Initialize sign in client
+        googleSignInClient= GoogleSignIn.getClient(MainActivity.this,googleSignInOptions);
 
         //Firebase
 
@@ -90,32 +89,88 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case REQ_ONE_TAP:
-                try {
+        if(requestCode==100)
+        {
+            // When request code is equal to 100
+            // Initialize task
+            Task<GoogleSignInAccount> signInAccountTask = GoogleSignIn
+                    .getSignedInAccountFromIntent(data);
 
-                    SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
-                    String idToken = credential.getGoogleIdToken();
-                    if (idToken !=  null) {
-                        // Got an ID token from Google. Use it to authenticate
-                        // with Firebase.
-                        Toast.makeText(this, "Got ID token.", Toast.LENGTH_SHORT).show();
+            // check condition
+            if (signInAccountTask.isSuccessful())
+            {
+                // When google sign in successful
+                // Initialize string
+                String s = "Google sign in successful";
+                // Display Toast
+                displayToast(s);
+                // Initialize sign in account
+                try
+                {
+                    // Initialize sign in account
+                    GoogleSignInAccount googleSignInAccount = signInAccountTask
+                            .getResult(ApiException.class);
+                    // Check condition
+                    if (googleSignInAccount != null)
+                    {
+                        // When sign in account is not equal to null
+                        // Initialize auth credential
+                        AuthCredential authCredential = GoogleAuthProvider
+                                .getCredential(googleSignInAccount.getIdToken()
+                                        , null);
+                        // Check credential
+                        firebaseAuth.signInWithCredential(authCredential)
+                                    .addOnCompleteListener(this,
+                                            new OnCompleteListener<AuthResult>()
+                                            {
+                                                @Override
+                                                public void onComplete(
+                                                        @NonNull Task<AuthResult> task)
+                                                {
+                                                    // Check condition
+                                                    if (task.isSuccessful())
+                                                    {
+                                                        // When task is successful
+                                                        // Redirect to profile activity
+                                              /* startActivity(new Intent(MainActivity.this
+                                                        ,ProfileActivity.class)
+                                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));*/
+                                                        // Display Toast
+                                                        displayToast(
+                                                                "Firebase authentication successful");
+                                                    }
+                                                    else
+                                                    {
+                                                        // When task is unsuccessful
+                                                        // Display Toast
+                                                        displayToast(
+                                                                "Authentication Failed :" + task.getException()
+                                                                                                .getMessage());
+                                                    }
+                                                }
+                                            });
+
                     }
-                } catch (ApiException e) {
-                    // ...
                 }
-                break;
+                catch (ApiException e)
+                {
+                    e.printStackTrace();
+                }
+
+
+            }
         }
     }
-
+    private void displayToast(String s)
+    {
+        Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onStart()
     {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+
     }
 
     @Override
@@ -134,17 +189,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void btnGoogleClick()
     {
+        Intent intent=googleSignInClient.getSignInIntent();
+        // Start activity for result
+        startActivityForResult(intent,100);
 
-    }
-
-    private void updateUI(FirebaseUser currentUser)
-    {
-        if(currentUser != null)
+        firebaseAuth=FirebaseAuth.getInstance();
+        // Initialize firebase user
+        FirebaseUser firebaseUser=firebaseAuth.getCurrentUser();
+        // Check condition
+        if(firebaseUser!=null)
         {
-            Toast.makeText(this, currentUser.toString(), Toast.LENGTH_SHORT).show();
+            // When user already sign in
+            // redirect to profile activity
+        /*    startActivity(new Intent(MainActivity.this,ProfileActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));*/
+            Toast.makeText(this, "Loggato con"+ firebaseUser.getEmail(), Toast.LENGTH_SHORT).show();
         }
-
     }
+
+
 }
 
 
