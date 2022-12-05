@@ -8,26 +8,15 @@ xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@drawable/gradient_bg"
     android:orientation="vertical">
 
- <LinearLayout
-     android:layout_width="155dp"
+ <TextView
+     android:layout_width="wrap_content"
      android:layout_height="wrap_content"
-     android:layout_gravity="center"
-     android:layout_marginTop="50dp"
-     android:gravity="center"
-     android:orientation="vertical">
-
-  <ImageView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:src="@drawable/ic_login_title_64" />
-
-  <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="10dp"
-      android:text="Login"
-      android:textSize="25dp" />
- </LinearLayout>
+     android:layout_marginTop="25sp"
+     android:text="@string/text_login"
+     android:textSize="25sp"
+     android:drawableTop="@drawable/ic_login_title_64"
+     android:layout_gravity="center">
+ </TextView>
 
  <LinearLayout
      android:layout_width="match_parent"
@@ -44,7 +33,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
       android:layout_marginLeft="25dp"
       android:layout_marginRight="25dp"
       android:backgroundTint="@color/white"
-      android:hint="Insert your email"
+      android:hint="@string/hint_email"
       android:textColorHint="@color/white"
       app:boxCornerRadiusBottomEnd="15dp"
       app:boxCornerRadiusBottomStart="15dp"
@@ -56,7 +45,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
       app:startIconDrawable="@drawable/ic_email">
 
    <com.google.android.material.textfield.TextInputEditText
-       android:id="@+id/txtWorkDate"
+       android:id="@+id/txtEmail"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:backgroundTint="@color/white"
@@ -68,7 +57,6 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 
   <!--TextBox Password-->
   <com.google.android.material.textfield.TextInputLayout
-      android:id="@+id/drawa"
       style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -76,7 +64,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
       android:layout_marginLeft="25dp"
       android:layout_marginRight="25dp"
       android:backgroundTint="@color/white"
-      android:hint="Insert your password"
+      android:hint="@string/hintPassword"
       android:textColorHint="@color/white"
       app:boxCornerRadiusBottomEnd="15dp"
       app:boxCornerRadiusBottomStart="15dp"
@@ -94,17 +82,18 @@ xmlns:android="http://schemas.android.com/apk/res/android"
        android:backgroundTint="@color/white"
        android:inputType="textPassword"
        android:textColor="@color/white"
-       android:textCursorDrawable="@drawable/color_cursor"/>
+       android:textCursorDrawable="@drawable/color_cursor" />
 
   </com.google.android.material.textfield.TextInputLayout>
   <!--Login button-->
   <androidx.appcompat.widget.AppCompatButton
+      android:id="@+id/btn_login_with_mail"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_margin="50dp"
       android:background="@drawable/gradient_button"
       android:gravity="center"
-      android:text="Login"
+      android:text="@string/text_login"
       android:textColor="@color/white" />
  </LinearLayout>
 
@@ -114,11 +103,13 @@ xmlns:android="http://schemas.android.com/apk/res/android"
      android:background="#00BCD4"/>
 
  <ImageButton
+     android:id="@+id/btn_login_with_google"
      android:layout_width="wrap_content"
      android:layout_height="wrap_content"
      android:layout_gravity="center"
      android:layout_marginTop="25dp"
      android:background="#00FFFFFF"
+     android:contentDescription="@string/google_login_logo"
      android:scaleX="0.5"
      android:scaleY="0.5"
      android:src="@drawable/ic_google_image" />

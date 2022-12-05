@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MyHomeBook</string>
+    <string name="hintPassword">Insert your password</string>
+    <string name="text_login">Login</string>
+    <string name="hint_email">Insert your email</string>
+    <string name="login_logo">login_logo</string>
+    <string name="google_login_logo">google_login_logo</string>
+
 </resources>
