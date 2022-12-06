@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyHomeBook"
         tools:targetApi="31">
+        <activity android:name=".ClassActivity.UserRegistrationActivity">
+
+        </activity>
         <activity
             android:name=".ClassActivity.MainActivity"
             android:exported="true">
