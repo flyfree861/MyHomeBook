@@ -7,4 +7,5 @@
     <string name="google_login_logo">google_login_logo</string>
     <string name="registration">Registration</string>
     <string name="sign_in_button_text">SignIn</string>
+    <string name="click_here"><u>Click here</u></string>
 </resources>

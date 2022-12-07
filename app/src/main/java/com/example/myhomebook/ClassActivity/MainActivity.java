@@ -3,13 +3,16 @@ package com.example.myhomebook.ClassActivity;
 import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
@@ -17,9 +20,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myhomebook.R;
@@ -36,6 +41,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Map;
+import java.util.Set;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
     private static final int RC_SIGN_IN = 0;
@@ -43,14 +51,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     AppCompatButton btnLoginMail;
     ImageButton btnLoginGoogle;
     TextInputEditText txtMail, txtPassword;
+    TextView linkOpenReg;
+    CheckBox chkStaylogged;
     private ProgressDialog loadingBar;
 
     //Google oAuth Object declaration
     SignInButton btSignIn;
     GoogleSignInClient googleSignInClient;
     FirebaseAuth mAuth;
+    SharedPreferences SharPrefLoginSettings;
 
-    // TODO Crea la casella per chiedere di rimanere loggati
+    //public variables
+    Boolean remainLogged;
+
     //TODO update ui non serve a una sega da vedere come gestirlo
     //TODO separa le classi dei vari login per un maggiore ordine
     @Override
@@ -63,17 +76,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         //UI Association
-        btnLoginGoogle = findViewById(R.id.btn_login_with_google);
-        btnLoginMail = findViewById(R.id.btn_login_with_mail);
-        txtMail = findViewById(R.id.txtLoginEmail);
-        txtPassword = findViewById(R.id.txtLoginPassword);
+        InizializeUI();
 
+        //Eventhandler UI
         btnLoginGoogle.setOnClickListener(this);
         btnLoginMail.setOnClickListener(this);
-
+        linkOpenReg.setOnClickListener(this);
         loadingBar = new ProgressDialog(this);
+        chkStaylogged.setOnClickListener(this);
+
+        //Read Shared preferences
+        SharPrefLoginSettings = this.getPreferences(Context.MODE_PRIVATE);
+        remainLogged = SharPrefLoginSettings.getBoolean("isLoggedStatus", false);
+
+        //set checkbox Stay Logged
+        if (remainLogged)
+        {
+            chkStaylogged.setChecked(true);
+        }
+        else
+        {
+            chkStaylogged.setChecked(false);
+        }
 
 
+//region Google authantication declaration
         //Google SignIn Object
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -84,29 +111,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        updateUI(account);
 
+//endregion
+
+//region Firebase Authantication
         //Firebase object
         mAuth = FirebaseAuth.getInstance();
-
+//endregion
     }
 
-    //Update UI
-    private void updateUI(GoogleSignInAccount account)
+    private void InizializeUI()
     {
-        if (account != null)
-        {
-            displayToast(account.getEmail());
-            googleSignInClient.signOut();
+        btnLoginGoogle = findViewById(R.id.btn_login_with_google);
+        btnLoginMail = findViewById(R.id.btn_login_with_mail);
+        txtMail = findViewById(R.id.txtLoginEmail);
+        txtPassword = findViewById(R.id.txtLoginPassword);
+        linkOpenReg = findViewById(R.id.linkOpenReg);
+        chkStaylogged = findViewById(R.id.chkStayLogged);
+    }
 
+    @Override
+    public void onClick(View view)
+    {
+        if (view.getId() == R.id.btn_login_with_google)
+        {
+            btnGoogleClick();
+        }
+        else if (view.getId() == R.id.btn_login_with_mail)
+        {
+            btnLoginClick();
+        }
+        else if (view.getId() == R.id.linkOpenReg)
+        {
+            openRegistrationActivity();
+        }
+        else if (view.getId() == R.id.chkStayLogged)
+        {
+            if (chkStaylogged.isChecked())
+            {
+                SharedPreferences.Editor edt = SharPrefLoginSettings.edit();
+                edt.putBoolean("isLoggedStatus", true);
+                edt.apply();
+            }
+            else if (!chkStaylogged.isChecked())
+            {
+                SharedPreferences.Editor edt = SharPrefLoginSettings.edit();
+                edt.putBoolean("isLoggedStatus", false);
+                edt.apply();
+            }
         }
 
     }
 
 
-    private void displayToast(String s)
+//region Google Authantication
+    private void updateUI(GoogleSignInAccount account)
     {
-        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+        if (!chkStaylogged.isChecked())
+        {
+            googleSignInClient.signOut();
+        }
     }
 
     @Override
@@ -131,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
-            updateUI(account);
+
         }
         catch (ApiException e)
         {
@@ -142,19 +206,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public void onClick(View view)
+    public void btnGoogleClick()
     {
-        if (view.getId() == R.id.btn_login_with_google)
-        {
-            btnGoogleClick();
-        }
-        else if (view.getId() == R.id.btn_login_with_mail)
-        {
-            btnLoginClick();
-        }
+        Intent signInIntent = googleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
+    //endregion
 
+    //region Firebase Email/password access
     private void btnLoginClick()
     {
         String email = "";
@@ -216,8 +275,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onClick(DialogInterface dialog, int id)
                     {
                         Intent intent = new Intent(MainActivity.this, UserRegistrationActivity.class);
+                        String email = "";
+                        String password = "";
+                        intent.putExtra("email", txtMail.getText().toString());
+                        intent.putExtra("password", txtPassword.getText().toString());
                         startActivity(intent);
-                      //  finish();
+                        //  finish();
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener()
@@ -237,13 +300,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void btnGoogleClick()
-    {
-        Intent signInIntent = googleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-
     @Override
     protected void onStart()
     {
@@ -260,6 +316,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         displayToast(currentUser.getEmail());
         mAuth.signOut();
+    }
+
+    //endregion
+
+
+    private void openRegistrationActivity()
+    {
+        Intent intent = new Intent(this, UserRegistrationActivity.class);
+        startActivity(intent);
+    }
+
+    private void displayToast(String s)
+    {
+        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
     }
 
 

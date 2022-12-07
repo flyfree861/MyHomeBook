@@ -41,6 +41,17 @@ public class UserRegistrationActivity extends AppCompatActivity implements View.
         //Inizialize UI
         initializeUI();
 
+        //Get Extra to speedup registration
+        Intent intent= getIntent();
+        Bundle bundle = intent.getExtras();
+        if(bundle!=null)
+        {
+            String _mail =(String) bundle.get("email");
+            String _password =(String) bundle.get("password");
+            txtMail.setText(_mail);
+            txtPassword.setText(_password);
+        }
+
         //Button Pressed
         btnSignin.setOnClickListener(this);
 
