@@ -112,6 +112,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
+        if(chkStaylogged.isChecked())
+        {btnGoogleClick();}
+
 //endregion
 
 //region Firebase Authantication
@@ -193,7 +196,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try
         {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
+            updateUI(account);
+            displayToast("Logged in succesfully Mr. \n\r"+account.getDisplayName());
             // Signed in successfully, show authenticated UI.
 
         }
