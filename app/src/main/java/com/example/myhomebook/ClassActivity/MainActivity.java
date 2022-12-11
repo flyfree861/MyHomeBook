@@ -62,14 +62,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //Firebase
     FirebaseAuth mAuth;
+    FirebaseUser currentUSer;
 
 
     //public variables
     Boolean remainLogged;
     SharedPreferences SharPrefLoginSettings;
 
-    //TODO update ui non serve a una sega da vedere come gestirlo
-    //TODO separa le classi dei vari login per un maggiore ordine
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -104,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 //region Google authantication declaration
-        if(chkStaylogged.isChecked())
+        if (chkStaylogged.isChecked())
         {
             SigninGoogleAccount();
             // Check for existing Google Sign In account, if the user is already signed in
@@ -114,8 +113,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Google SignIn Object
 
 
-        if(chkStaylogged.isChecked())
-        {btnGoogleClick();}
+        if (chkStaylogged.isChecked())
+        {
+            btnGoogleClick();
+        }
 
 //endregion
 
@@ -199,8 +200,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try
         {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            displayToast("Welcome back \n\r"+account.getDisplayName());
+            displayToast("Welcome back \n\r" + account.getDisplayName());
             // Signed in successfully, show authenticated UI.
+            //TODO open activity main
         }
 
         catch (ApiException e)
@@ -316,16 +318,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null)
         {
-            updateUIEmailPassword(currentUser);
+            if (chkStaylogged.isChecked() == true)
+            {
+                //TODO Apro l'activity principale
+            }
+
+            else
+            {
+                txtMail.setText(currentUser.getEmail());
+                mAuth.signOut();
+            }
+
+
         }
 
     }
 
-    private void updateUIEmailPassword(FirebaseUser currentUser)
-    {
-        displayToast(currentUser.getEmail());
-        mAuth.signOut();
-    }
 
     //endregion
 

@@ -131,8 +131,12 @@ public class UserRegistrationActivity extends AppCompatActivity implements View.
                         }
                         else
                         {
-                            Toast.makeText(getApplicationContext(), "Registration failed! Please try again later", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(),"Is possible that you are already registered with google, try to login with it." , Toast.LENGTH_LONG)
+                                    .show();
+                            //task.getException().toString()
                             progressBar.setVisibility(View.GONE);
+                            Intent intent = new Intent(UserRegistrationActivity.this, MainActivity.class);
+                            startActivity(intent);
                         }
                     }
                 });
