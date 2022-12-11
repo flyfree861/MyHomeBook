@@ -56,13 +56,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressDialog loadingBar;
 
     //Google oAuth Object declaration
-    SignInButton btSignIn;
+    GoogleSignInAccount account;
+    GoogleSignInOptions gso;
     GoogleSignInClient googleSignInClient;
+
+    //Firebase
     FirebaseAuth mAuth;
-    SharedPreferences SharPrefLoginSettings;
+
 
     //public variables
     Boolean remainLogged;
+    SharedPreferences SharPrefLoginSettings;
 
     //TODO update ui non serve a una sega da vedere come gestirlo
     //TODO separa le classi dei vari login per un maggiore ordine
@@ -99,28 +103,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             chkStaylogged.setChecked(false);
         }
 
-
 //region Google authantication declaration
+        if(chkStaylogged.isChecked())
+        {
+            SigninGoogleAccount();
+            // Check for existing Google Sign In account, if the user is already signed in
+            // the GoogleSignInAccount will be non-null.
+            account = GoogleSignIn.getLastSignedInAccount(this);
+        }
         //Google SignIn Object
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        // Build a GoogleSignInClient with the options specified by gso.
-        googleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
         if(chkStaylogged.isChecked())
         {btnGoogleClick();}
 
 //endregion
 
-//region Firebase Authantication
-        //Firebase object
+//Firebase object
         mAuth = FirebaseAuth.getInstance();
-//endregion
+
     }
 
     private void InizializeUI()
@@ -168,12 +169,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 //region Google Authantication
-    private void updateUI(GoogleSignInAccount account)
+
+    public void SigninGoogleAccount()
     {
-        if (!chkStaylogged.isChecked())
-        {
-            googleSignInClient.signOut();
-        }
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        // Build a GoogleSignInClient with the options specified by gso.
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     @Override
@@ -196,30 +199,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try
         {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            updateUI(account);
-            displayToast("Logged in succesfully Mr. \n\r"+account.getDisplayName());
+            displayToast("Welcome back \n\r"+account.getDisplayName());
             // Signed in successfully, show authenticated UI.
-
         }
+
         catch (ApiException e)
         {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            updateUI(null);
         }
     }
 
     public void btnGoogleClick()
     {
+        SigninGoogleAccount();
         Intent signInIntent = googleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
     //endregion
 
+
     //region Firebase Email/password access
     private void btnLoginClick()
     {
+
         String email = "";
         String password = "";
         //Check if field is null
@@ -243,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loadingBar.setMessage("Please wait while we check your credential");
         loadingBar.setCanceledOnTouchOutside(true);
         loadingBar.show();
+
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>()
                 {
