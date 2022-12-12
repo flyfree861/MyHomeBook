@@ -37,6 +37,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     AppCompatButton btnLoginMail;
     ImageButton btnLoginGoogle;
     TextInputEditText txtMail, txtPassword;
+    TextInputLayout txtLayoutMail, txtLayoutPsw;
     TextView linkOpenReg;
     CheckBox chkStaylogged;
     private ProgressDialog loadingBar;
@@ -133,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtPassword = findViewById(R.id.txtLoginPassword);
         linkOpenReg = findViewById(R.id.linkOpenReg);
         chkStaylogged = findViewById(R.id.chkStayLogged);
+        txtLayoutMail = findViewById(R.id.txtOutboxLoginMail);
+        txtLayoutPsw = findViewById(R.id.txtOutboxPassword);
     }
 
     @Override
@@ -231,18 +235,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Check if field is null
         if (TextUtils.isEmpty(txtMail.getText().toString()))
         {
-            displayToast("Insert your email");
-            txtMail.setError("This field can't be empty");
+            txtLayoutMail.setError("This field can't be empty");
             return;
 
         }
+        txtLayoutMail.setError(null);
+
         if (TextUtils.isEmpty(txtPassword.getText().toString()))
         {
-            displayToast("Insert your password");
-            txtPassword.setError("This field can't be empty");
+            txtLayoutPsw.setError("This field can't be empty");
             return;
-
         }
+        txtLayoutPsw.setError(null);
+
         email = txtMail.getText().toString();
         password = txtPassword.getText().toString();
         loadingBar.setTitle("Check user");

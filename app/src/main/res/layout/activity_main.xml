@@ -27,6 +27,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 
   <!--TextBox Email-->
   <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/txtOutboxLoginMail"
       style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -42,6 +43,8 @@ xmlns:android="http://schemas.android.com/apk/res/android"
       app:boxStrokeColor="@color/white"
       app:endIconMode="clear_text"
       app:hintTextColor="@color/white"
+      app:errorEnabled="true"
+      app:errorTextColor="#ff0000"
       app:startIconDrawable="@drawable/ic_email">
 
    <com.google.android.material.textfield.TextInputEditText
@@ -50,13 +53,14 @@ xmlns:android="http://schemas.android.com/apk/res/android"
        android:layout_height="wrap_content"
        android:backgroundTint="@color/white"
        android:inputType="textEmailAddress"
-       android:textColor="@color/white"
+       android:textColor="#8e918f"
        android:textCursorDrawable="@drawable/color_cursor"/>
 
   </com.google.android.material.textfield.TextInputLayout>
 
   <!--TextBox Password-->
   <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/txtOutboxPassword"
       style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -81,7 +85,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
        android:layout_height="wrap_content"
        android:backgroundTint="@color/white"
        android:inputType="textPassword"
-       android:textColor="@color/white"
+       android:textColor="#8e918f"
        android:textCursorDrawable="@drawable/color_cursor" />
 
   </com.google.android.material.textfield.TextInputLayout>
